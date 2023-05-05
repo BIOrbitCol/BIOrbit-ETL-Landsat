@@ -68,3 +68,13 @@ ENV/
 # Log files #
 #############
 *.log
+
+# poetry files #
+################
+/poetry.lock
+
+# work folder #
+###############
+/chromedriver_linux64/
+/landsat_dir/
+/img_input/

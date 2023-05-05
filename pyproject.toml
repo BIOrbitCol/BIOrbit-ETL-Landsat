@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "biorbit-etl-landsat"
+version = "0.1.0"
+description = "ETL Biorbiit project"
+authors = ["s"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "biorbit_etl_landsat"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+geopandas = "0.10.2"
+folium = "0.12.1"
+beautifulsoup4 = "4.10.0"
+selenium = "4.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

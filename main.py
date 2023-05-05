@@ -11,7 +11,7 @@ password = 'xxx'
 
 # chromedriver path
 chromedriver_path = 'xxx'
-geojson_path = "xxx"  # https://geojson.io/
+geojson_path = "xxx"  #
 
 # Download folder
 downloads_dir = "xxx"
