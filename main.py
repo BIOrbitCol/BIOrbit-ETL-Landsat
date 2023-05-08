@@ -1,20 +1,21 @@
+import os
 import landsat
 from landsat import LandsatAPI
 
 # Site's coord (EPSG:4326)
-latitude = 000
-longitude = 000
+latitude = "5.48333"
+longitude = "-75.0667"
 
 # USGS website
-username = 'xxx'
-password = 'xxx'
+username = os.getenv("USERNAME")
+password = os.getenv("PASSWORD")
 
 # chromedriver path
-chromedriver_path = 'xxx'
-geojson_path = "xxx"  #
+chromedriver_path = os.getenv("CHROMEDRIVER_PATH")
+geojson_path = os.getenv("GEOJSON_PATH")
 
 # Download folder
-downloads_dir = "xxx"
+downloads_dir = os.getenv("DOWNLOADS_DIR")
 
 footprint = landsat.get_footprint(latitude, longitude, geojson_path)
 

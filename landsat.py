@@ -55,7 +55,8 @@ class LandsatAPI:
                 decimals_button.click()
 
                 # Flatten the nested list to match the expected format
-                coordinates = [tuple(coord) for coord in coordinates[0]]
+                # coordinates = [tuple(coord) for coord in coordinates[0]]
+                coordinates = [tuple(i.split()) for i in list(coordinates.wkt[10:-2].split(","))]
 
                 # Add coords
                 for coord in coordinates:
