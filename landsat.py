@@ -102,7 +102,7 @@ class LandsatAPI:
                 result_button = self.driver.find_element(By.XPATH,
                                                          "/html/body/div[1]/div/div/div[2]/div[2]/div[2]/div[3]/div[3]/input[3]")
                 result_button.click()
-                time.sleep(3)
+                time.sleep(180)
 
                 # Next page: Results
                 # Select image for download
