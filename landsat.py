@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import geopandas as gpd
 import folium
 from selenium import webdriver
+import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -198,7 +199,7 @@ class LandsatAPI:
                         time.sleep(0.5)
                         downloads = self.driver.find_elements(By.CLASS_NAME, 'download')
                         downloads[j].click()
-                        time.sleep(6)
+                        time.sleep(60)
 
                         download_button = self.driver.execute_script(
                             "return document.querySelector('.btn.btn-secondary.downloadButton')")
@@ -331,7 +332,10 @@ def get_footprint(latitude, longitude, path_to_geojson):
 
 def prepare_and_run_chromium(chromedriver_path, downloads_dir):
     # Set download options for headless mode
-    options = Options()
+    # options = Options()
+    options = uc.ChromeOptions()
+    # options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
 
 
     '''
@@ -351,10 +355,11 @@ def prepare_and_run_chromium(chromedriver_path, downloads_dir):
     })
 
     # Create a Service object
-    service = Service(chromedriver_path)
+    # service = Service(chromedriver_path)
 
     # Start Chrome driver and set download behavior
-    driver = webdriver.Chrome(service=service, options=options)
+    # driver = webdriver.Chrome(service=service, options=options)
+    driver = uc.Chrome(options=options)
     driver.execute_cdp_cmd("Page.setDownloadBehavior", {"behavior": "allow", "downloadPath": downloads_dir})
 
     # Return the driver object
@@ -376,7 +381,9 @@ def wait_for_downloads(download_folder):
     Wait until a file with a .crdownload extension appears in the download folder, indicating that a download is in
     progress.
     """
+    i = 1
     print("Waiting for the download to start...")
     while not any(filename.endswith(".crdownload") for filename in os.listdir(download_folder)):
         time.sleep(1)  # Wait 1 second between checks
+        print(f"{i + 1}")
     print("Download started!")
