@@ -103,7 +103,7 @@ class LandsatAPI:
                 result_button = self.driver.find_element(By.XPATH,
                                                          "/html/body/div[1]/div/div/div[2]/div[2]/div[2]/div[3]/div[3]/input[3]")
                 result_button.click()
-                time.sleep(180)
+                time.sleep(60)
 
                 # Next page: Results
                 # Select image for download
@@ -331,23 +331,10 @@ def get_footprint(latitude, longitude, path_to_geojson):
 
 
 def prepare_and_run_chromium(chromedriver_path, downloads_dir):
-    # Set download options for headless mode
-    # options = Options()
+
     options = uc.ChromeOptions()
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     options.add_argument("--disable-gpu")
-
-
-    '''
-        TODO: bug
-    '''
-
-    # options.headless = True
-
-
-    '''
-        <---
-    '''
 
     options.add_experimental_option("prefs", {
         "download.default_directory": downloads_dir,
