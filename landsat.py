@@ -103,7 +103,7 @@ class LandsatAPI:
                 result_button = self.driver.find_element(By.XPATH,
                                                          "/html/body/div[1]/div/div/div[2]/div[2]/div[2]/div[3]/div[3]/input[3]")
                 result_button.click()
-                time.sleep(60)
+                time.sleep(3)
 
                 # Next page: Results
                 # Select image for download
@@ -199,7 +199,7 @@ class LandsatAPI:
                         time.sleep(0.5)
                         downloads = self.driver.find_elements(By.CLASS_NAME, 'download')
                         downloads[j].click()
-                        time.sleep(60)
+                        time.sleep(3)
 
                         download_button = self.driver.execute_script(
                             "return document.querySelector('.btn.btn-secondary.downloadButton')")
@@ -235,8 +235,7 @@ class LandsatAPI:
                         self.driver.execute_script(
                             "document.getElementsByClassName('btn btn-secondary productOptionsButton')[0].click();")
 
-                        self.driver.execute_script("document.getElementsByClassName('btn btn-secondary "
-                                                   "secondaryDownloadButton')[0].click();")
+                        self.driver.execute_script("document.getElementsByClassName('btn btn-secondary secondaryDownloadButton')[0].click();")
 
                         print('\n')
                         print(f'Image: {image + 1}')
@@ -333,7 +332,7 @@ def get_footprint(latitude, longitude, path_to_geojson):
 def prepare_and_run_chromium(chromedriver_path, downloads_dir):
 
     options = uc.ChromeOptions()
-    options.add_argument("--headless")
+    # options.add_argument("--headless")
     options.add_argument("--disable-gpu")
 
     options.add_experimental_option("prefs", {
@@ -372,5 +371,4 @@ def wait_for_downloads(download_folder):
     print("Waiting for the download to start...")
     while not any(filename.endswith(".crdownload") for filename in os.listdir(download_folder)):
         time.sleep(1)  # Wait 1 second between checks
-        print(f"{i + 1}")
     print("Download started!")
