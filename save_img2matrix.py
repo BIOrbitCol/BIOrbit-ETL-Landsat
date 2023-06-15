@@ -1,5 +1,9 @@
+import time
+import tarfile
 import rasterio
 import numpy as np
+from numba import jit
+from copy import deepcopy
 
 
 def create_rgb(chanel, green=False, min_g=0):
@@ -23,35 +27,66 @@ def create_rgb(chanel, green=False, min_g=0):
     return chanel_norm
 
 
+@jit(nopython=True)
+def iter_band(deforestation, forest_data):
+    for i in range(deforestation.shape[0]):
+        for j in range(deforestation.shape[1]):
+            if deforestation[i, j] > 0:
+                deforestation[i, j] = 0.65
+            elif deforestation[i, j] > 1:
+                deforestation[i, j] = 1
+            elif deforestation[i, j] >= 0.7:
+                forest_data[i, j] = 0.65
+
+    return deforestation, forest_data
+
+
+@jit(nopython=True)
+def ndvi_matrix(infra_chanel, reed_chanel, matrix):
+    for i in range(infra_chanel.shape[1]):
+        for j in range(infra_chanel.shape[2]):
+            num = round(infra_chanel[0][i, j] - reed_chanel[0][i, j], 2)
+            den = round(infra_chanel[0][i, j] + reed_chanel[0][i, j], 2)
+            if den > np.float64(0):
+                ndvi = np.float32(num / den)
+            else:
+                ndvi = 0.0
+            matrix[i, j] = np.float64(ndvi)
+
+    return matrix
+
+
 class ImgPrepare:
 
-    def __init__(self, file_path):
+    def __init__(self, file_name):
         """
         this function prepare image to send IPFS
-        :param file_path: path to image process
+        :param file_name: path to image process
         """
-        self.file_path = file_path
+        file = tarfile.open(f"img_input/{file_name}")
+        self.folder_name = file_name.split(".")[0]
+        self.file_path = f'bands_folder/{self.folder_name}'
+        file.extractall(self.file_path)
+        # time.sleep(30)
+        file.close()
 
     def prepare(self):
-        """
-        this function read TIF file and extract NDVI chanel, clouds and basic statistic
-        :return: NDV image
-        """
-        with rasterio.open(f"{self.file_path}") as src:
-            org_img = src.read()
+        with rasterio.open(f"bands_folder/{self.folder_name}/{self.folder_name}_SR_B4.TIF") as src:
+            img_b4 = src.read()
 
-        deforestation = np.array(org_img[4])
+        with rasterio.open(f"bands_folder/{self.folder_name}/{self.folder_name}_SR_B1.TIF") as src:
+            img_b1 = src.read()
 
-        forest_data = np.zeros((org_img.shape[1], org_img.shape[2]), dtype=np.int8)
+        matrix = np.zeros((img_b4.shape[1], img_b4.shape[2]), dtype=np.float64)
 
-        for i in range(org_img.shape[1]):
-            for j in range(org_img.shape[2]):
-                if np.isnan(deforestation[i, j]):
-                    deforestation[i, j] = 0.65
-                elif deforestation[i, j] > 1:
-                    deforestation[i, j] = 1
-                elif deforestation[i, j] >= 0.7:
-                    forest_data[i, j] = 0.65
+        ndvi_mat = ndvi_matrix(infra_chanel=img_b4,
+                               reed_chanel=img_b1,
+                               matrix=matrix)
+
+        forest_data = np.zeros((img_b4.shape[1], img_b4.shape[2]), dtype=np.float64)
+
+        deforestation, forest_data = iter_band(deforestation=deepcopy(ndvi_mat),
+                                               forest_data=forest_data)
 
         area_pixels = deforestation.shape[0] * deforestation.shape[1]
         area_forest = forest_data.sum()
@@ -66,14 +101,14 @@ class ImgPrepare:
         return resume, hist_data, deforestation
 
     def rgb(self):
-        """
-        this function create normal image
-        :return: RGB image
-        """
-        with rasterio.open(f"{self.file_path}") as src:
-            red = src.read(1)
-            green = src.read(2)
-            blue = src.read(3)
+        with rasterio.open(f"{self.file_path}_SR_B1.TIF") as src:
+            red = src.read()
+
+        with rasterio.open(f"{self.file_path}_SR_B2.TIF") as src:
+            green = src.read()
+
+        with rasterio.open(f"{self.file_path}_SR_B2.TIF") as src:
+            blue = src.read()
 
         red_norm = create_rgb(red)
         green_norm = create_rgb(green, green=True, min_g=75)
