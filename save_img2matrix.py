@@ -29,6 +29,15 @@ def create_rgb(chanel, green=False, min_g=0):
 
 @jit(nopython=True)
 def iter_band(deforestation, forest_data):
+    """
+    this function compare threshold of ndvi
+    Args:
+        deforestation: numpy array with NDVI calculate
+        forest_data:  numpy array empty with same shape of calculate
+
+    Returns:
+
+    """
     for i in range(deforestation.shape[0]):
         for j in range(deforestation.shape[1]):
             if deforestation[i, j] > 0:
@@ -43,6 +52,16 @@ def iter_band(deforestation, forest_data):
 
 @jit(nopython=True)
 def ndvi_matrix(infra_chanel, reed_chanel, matrix):
+    """
+    this function calculate ndvi from green and infra satelital chanel
+    Args:
+        infra_chanel: numpy array with infra chanel from satellite
+        reed_chanel: numpy array with green chanel from satellite
+        matrix: numpy array empty with same shape of calculate
+
+    Returns:
+
+    """
     for i in range(infra_chanel.shape[1]):
         for j in range(infra_chanel.shape[2]):
             num = round(infra_chanel[0][i, j] - reed_chanel[0][i, j], 2)
@@ -71,6 +90,11 @@ class ImgPrepare:
         file.close()
 
     def prepare(self):
+        """
+        this function return data from save
+        Returns: resume dict, hist_data list, deforestation array
+
+        """
         with rasterio.open(f"bands_folder/{self.folder_name}/{self.folder_name}_SR_B4.TIF") as src:
             img_b4 = src.read()
 
@@ -101,6 +125,11 @@ class ImgPrepare:
         return resume, hist_data, deforestation
 
     def rgb(self):
+        """
+        this function create a rgb image from coordinates
+        Returns: rgb_img numpy array
+
+        """
         with rasterio.open(f"{self.file_path}_SR_B1.TIF") as src:
             red = src.read()
 
