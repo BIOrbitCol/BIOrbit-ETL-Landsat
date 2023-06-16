@@ -6,18 +6,37 @@ from numba import jit
 from copy import deepcopy
 
 
-def create_rgb(chanel, green=False, min_g=0):
+@jit(nopython=True)
+def iter_rgb(chanel):
     """
-    This function create rgb image and highlights some chanels
-    :param chanel: array chanel
-    :param green: if highlights some chanel
-    :param min_g: if highlights some chanel
-    :return: processed chanel
+    this function iter in search na in array
+    Args:
+        chanel: np array with chanel to analyse
+
+    Returns: fix channel
+
     """
     for i in range(chanel.shape[0]):
         for j in range(chanel.shape[1]):
             if np.isnan(chanel[i, j]):
                 chanel[i, j] = 1
+
+    return chanel
+
+
+def create_rgb(chanel, green=False, min_g=0):
+    """
+    This function create rgb image and highlights some channels
+    :param chanel: array chanel
+    :param green: if highlights some chanel
+    :param min_g: if highlights some chanel
+    :return: processed chanel
+    """
+    # for i in range(chanel.shape[0]):
+    #     for j in range(chanel.shape[1]):
+    #         if np.isnan(chanel[i, j]):
+    #             chanel[i, j] = 1
+    chanel = iter_rgb(chanel)
 
     if not green:
         chanel_norm = (255 * (chanel - np.min(chanel)) / np.ptp(chanel)).astype(int)
@@ -130,18 +149,18 @@ class ImgPrepare:
         Returns: rgb_img numpy array
 
         """
-        with rasterio.open(f"{self.file_path}_SR_B1.TIF") as src:
+        with rasterio.open(f"{self.file_path}/{self.folder_name}_SR_B1.TIF") as src:
             red = src.read()
 
-        with rasterio.open(f"{self.file_path}_SR_B2.TIF") as src:
+        with rasterio.open(f"{self.file_path}/{self.folder_name}_SR_B2.TIF") as src:
             green = src.read()
 
-        with rasterio.open(f"{self.file_path}_SR_B2.TIF") as src:
+        with rasterio.open(f"{self.file_path}/{self.folder_name}_SR_B2.TIF") as src:
             blue = src.read()
 
-        red_norm = create_rgb(red)
-        green_norm = create_rgb(green, green=True, min_g=75)
-        blue_norm = create_rgb(blue)
+        red_norm = create_rgb(red[0])
+        green_norm = create_rgb(green[0], green=True, min_g=75)
+        blue_norm = create_rgb(blue[0])
 
         rgb_img = np.dstack((blue_norm, green_norm, red_norm)).astype(np.uint8)
 

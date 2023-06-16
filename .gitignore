@@ -79,3 +79,4 @@ ENV/
 /landsat_dir/
 /img_input/
 /bands_folder/
+*.npz
