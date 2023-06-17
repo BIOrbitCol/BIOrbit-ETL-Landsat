@@ -1,6 +1,6 @@
-FROM python:3.7.5
+FROM python:3.10.1
 # Update the system
-RUN apt-get update && apt-get upgrade -y && apt-get install nodejs npm -y
+RUN apt-get update && apt-get upgrade -y
 # Copy get-poetry.py
 COPY get-poetry.py /tmp/get-poetry.py
 COPY pyproject.toml pyproject.toml
@@ -14,9 +14,9 @@ ENV FOLDER_JSON="temp_files"
 RUN echo 'export PATH="/root/.local/bin:$PATH"' >> ~/.bashrc
 # Expose port
 EXPOSE 8080
-WORKDIR /BiOrbit_data
+WORKDIR /BIOrbit-ETL-Landsat
 # Copy folder
-COPY . /BiOrbit_data/
+COPY . /BIOrbit-ETL-Landsat/
 RUN poetry update
 # bash
 CMD ["bash"]
