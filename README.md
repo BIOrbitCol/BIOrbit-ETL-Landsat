@@ -12,16 +12,16 @@ Prerequisites: [Python 3](https://www.python.org) and [Anaconda](https://docs.co
 https://github.com/BIOrbitCol/BIOrbit-ETL-Landsat.git
 ```
 
-> Add conda-forge:
+> Install Poetry
 
 ```
-conda config --add channels conda-forge   
+https://python-poetry.org/   
 ```
 
-> Install libraries:
+> Update environment:
 
 ```
-pip install -r requirements.txt
+poetry update
 ```
 
 ## Authors 🏗
