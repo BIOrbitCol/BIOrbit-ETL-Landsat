@@ -80,3 +80,4 @@ ENV/
 /img_input/
 /bands_folder/
 *.npz
+/.env.sh
