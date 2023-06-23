@@ -283,6 +283,7 @@ class LandsatAPI:
                 self.driver = prepare_and_run_chromium(chromedriver_path, downloads_dir)
                 continue
 
+        return tar_list
 
 def get_date_range(date_range_days):
     """
